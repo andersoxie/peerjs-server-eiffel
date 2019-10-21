@@ -1,0 +1,54 @@
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Eiffel Generated
+EIFGENs
+exception_trace.log
+class_attribute.rc
+archive.tar.bz2
+cast_iron.dat
+iron_*.bat
+tar_*.txt
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# =========================
+# Operating System Files
+# =========================
+
+# OSX
+# =========================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must ends with two \r.
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+
+# Eiffel IRON Related
+cast_iron.dat
+iron_*.*
+*.iron
+tar_*.txt
+*.bz2
