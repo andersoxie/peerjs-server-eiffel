@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-20-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-20-0 http://www.eiffel.com/developers/xml/configuration-1-20-0.xsd" name="json_ext" uuid="8996DBA5-2452-4E87-9105-717FCFD29253" library_target="peer_eiffel">
+	<target name="peer_eiffel">
+		<root all_classes="true"/>
+		<file_rule>
+			<exclude>/.git$</exclude>
+			<exclude>/.svn$</exclude>
+			<exclude>/CVS$</exclude>
+			<exclude>/EIFGENs$</exclude>
+			<exclude>/tests$</exclude>
+		</file_rule>
+		<option warning="true" is_obsolete_routine_type="true" syntax="provisional" manifest_array_type="mismatch_warning">
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+		</option>
+		<setting name="dead_code_removal" value="feature"/>
+		<capability>
+			<catcall_detection use="none"/>
+			<concurrency support="scoop" use="scoop"/>
+			<void_safety support="transitional" use="transitional"/>
+		</capability>
+		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
+		<library name="json" location="$ISE_LIBRARY\contrib\library\text\parser\json\library\json-safe.ecf">
+			<option warning="false">
+			</option>
+		</library>
+		<library name="json_ext" location="\home\anders\github_eiffel_liraries\json_ext_original\json_ext\json_ext.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time-safe.ecf"/>
+		<cluster name="peer_eiffel" location=".\" recursive="true"/>
+	</target>
+</system>
