@@ -68,7 +68,7 @@ feature -- Basic operations
 			end
 
 
-	webrpc_connected_clients: separate CONNECTED_CLIENTS [CLIENT]
+	webrpc_connected_clients: separate CONNECTED_CLIENTS
 
 		once ("PROCESS")
 			create Result.make_with_capacity (10)
@@ -361,9 +361,7 @@ feature -- Websocket execution
 	on_open (ws: WEB_SOCKET)
 	local
 
-		test:   separate STRING
-		client :   separate CLIENT
-		test_ws :   separate WEB_SOCKET
+		sep_client_id, sep_token_id:    separate STRING
 		do
 			set_timer_delay (1) -- Orginal was 1 second
 --			ws.socket.set_timeout_ns(1000000000)
@@ -371,15 +369,11 @@ feature -- Websocket execution
 			if ws.request.request_uri.has_substring ("apptesttest") then
 				if attached ws.request.string_item ("id") as  client_id and then not client_id.is_equal("null")then
 					if attached ws.request.string_item ("token") as client_token then
---						create client.make (client_id, client_token, ws)
-						create test.make_empty
---						create test_ws.make (ws.request, ws.response)
-						create client.make (test, test)
-						webrpc_connect_clients_put_client( webrpc_connected_clients, client)
+						sep_client_id := client_id.out
+						sep_token_id := client_token.out
+						webrpc_connect_clients_put_client( webrpc_connected_clients, sep_client_id, sep_token_id)
 					end
 				end
---				client_execute
---				create test.make_empty
 			else
 
 				if attached ws.request.cookie ({LOGIN_WITH_GITHUB_CONSTANTS}.oauth_user_login) as user2 then
@@ -411,6 +405,9 @@ feature -- Websocket execution
 			send_data : PEERJS_MESSAGE_DATA_SEND
 			JSON_string_to_send : STRING
 			client_to_send_to : CLIENT
+			json_string_to_heartbeat_client : separate STRING
+			sep_client_id : separate STRING
+			string_to_send : STRING
 		do
 
 			if ws.request.request_uri.has_substring ("apptesttest") then
@@ -423,24 +420,42 @@ feature -- Websocket execution
 
 						create send_data.make( new_webrpc_data.type, client_id, new_webrpc_data.get_dst, new_webrpc_data.get_payload)
 						json_string_to_send := send_data.json_out
-	--					log(json_string_to_send)
+
+						io.error.put_string("INCOMING DATA")
+						io.error.new_line
 						io.error.put_string(json_string_to_send)
 						io.error.new_line
 
 
 						create client_to_send_to.make (new_webrpc_data.get_dst, "dummy_token")--, ws  ) --ws is not used in cmparsion so I ust use the incoming socket for the serach object.
---						webrpc_connected_clients.start
---						webrpc_connected_clients.search (client_to_send_to)
---						if not webrpc_connected_clients.exhausted then
---							if attached webrpc_connected_clients.item.client_socket as s  then
---								s.send_text (json_string_to_send)
---							end
---						end
+
+						webrpc_connected_clients_send_command_to_client(webrpc_connected_clients, new_webrpc_data.get_dst, json_string_to_send)
+					else
+						-- HEARTBEAT
+						sep_client_id := client_id.out
+						json_string_to_heartbeat_client := webrpc_connected_clients_get_command_to_client(webrpc_connected_clients, sep_client_id)
+						create string_to_send.make_from_separate (json_string_to_heartbeat_client)
+						if string_to_send.count > 0 then
+
+							io.error.put_string("SENDING DATA")
+							io.error.new_line
+							io.error.put_string(string_to_send)
+							io.error.new_line
+
+							string_to_send.replace_substring_all ("\%"", "%"")
+							string_to_send.replace_substring_all ("\\", "\")
+							string_to_send.replace_substring_all ("%"payload%":%"", "%"payload%":")
+							string_to_send.replace_substring_all ("%"}%"}", "%"}}")
+
+
+
+							io.error.put_string("SENDING CLEANED DATA")
+							io.error.new_line
+							io.error.put_string(string_to_send)
+							io.error.new_line
+							ws.send_text ( string_to_send)
+						end
 					end
-
-
-
-
 
 				end
 
@@ -463,13 +478,8 @@ feature -- Websocket execution
 				if attached ws.request.string_item ("id") as client_id then
 					if attached ws.request.string_item ("token") as client_token then
 						if not client_id.is_equal ("null") then
---							create client_to_be_removed.make (client_id, client_token, ws)
---							move_webrpc_connect_clients_to_start( webrpc_connected_clients)
---							webrpc_connected_clients.search (client_to_be_removed)
---							if not webrpc_connected_clients.exhausted then
---								webrpc_connected_clients.remove
---							end
-
+							sep_client_id := client_id.out
+								webrpc_connected_clients_remove(webrpc_connected_clients, sep_client_id)
 						end
 					end
 				end
@@ -480,21 +490,25 @@ feature -- Websocket execution
 
 
 
-		webrpc_connect_clients_search( connect_clinet_container : separate CONNECTED_CLIENTS[CLIENT]; client : separate CLIENT )
+		webrpc_connected_clients_remove( connect_clinet_container : separate CONNECTED_CLIENTS; client : separate STRING )
 		do
-			connect_clinet_container.remove_client(client)
+			connect_clinet_container.remove(client)
 		end
 
-		move_webrpc_connect_clients_to_start( connect_clinet_container : separate CONNECTED_CLIENTS[CLIENT] )
+		webrpc_connect_clients_put_client( connect_clinet_container : separate CONNECTED_CLIENTS; client, token : separate STRING  )
 		do
-			connect_clinet_container.start
+			connect_clinet_container.put_client( client, token)
 		end
 
-		webrpc_connect_clients_put_client( connect_clinet_container : separate CONNECTED_CLIENTS[CLIENT]; client : separate CLIENT  )
+		webrpc_connected_clients_send_command_to_client(connect_clinet_container : separate CONNECTED_CLIENTS; client_destination, json_string : separate STRING)
 		do
-			connect_clinet_container.put_client( client)
+			connect_clinet_container.send_command_to_client(client_destination, json_string)
 		end
 
+		webrpc_connected_clients_get_command_to_client (connect_clinet_container : separate CONNECTED_CLIENTS; client_destination : separate STRING) : separate STRING
+		do
+			Result := connect_clinet_container.get_command_to_client(client_destination)
+		end
 
 
 	on_timer (ws: WEB_SOCKET)

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	CONNECTED_CLIENTS[G]
+	CONNECTED_CLIENTS
 
 
 create
@@ -19,6 +19,7 @@ feature -- Initialization
 			valid_capacity: a_capacity > 0
 		do
 			create storage.make
+			storage.compare_objects
 			capacity := a_capacity
 		ensure
 			capacity_set: capacity = a_capacity
@@ -27,35 +28,50 @@ feature -- Initialization
 
 feature -- Element change
 
-	put_client (a_element: separate G )
+	put_client (id, token: separate STRING )
 			-- Store element.
 		require
 			not_full: not is_full
 		do
-			storage.extend (a_element)
+			storage.extend ( create {CLIENT}.make (create {STRING}.make_from_separate (id), create {STRING}.make_from_separate (token)))
 		ensure
 			count_incremented: count = old count + 1
 			not_empty: not is_empty
 		end
 
-	remove_client (a_element: separate G )
+	remove (client: separate STRING )
 			-- Consume an element.
 		require
 			not_empty: not is_empty
 		do
 			storage.start
-			-- TEMP to get it to compile
-			--storage.search (a_element)
-			storage.remove
+			storage.search (create {CLIENT}.make (create {STRING}.make_from_separate (client),""))
+			if not storage.exhausted then
+				storage.remove
+			end
 		ensure
 			count_decremented: count = old count - 1
 			not_full: not is_full
 		end
 
-
-		start -- temproary to understand SCOOP and if I need it.
+		send_command_to_client(client_destination, json_string: separate STRING)
 		do
+			storage.start
+			storage.search (create {CLIENT}.make (create {STRING}.make_from_separate (client_destination),""))
+			if not storage.exhausted then
+				storage.item.add_message( create {STRING}.make_from_separate (json_string))
+			end
+			-- ensure that it is added and that the size is +1 and added at the end.
+		end
 
+		get_command_to_client(client : separate STRING ) : separate STRING
+		do
+			Result := ""
+			storage.start
+			storage.search (create {CLIENT}.make (create {STRING}.make_from_separate (client),""))
+			if not storage.exhausted then
+				Result := storage.item.get_message.out
+			end
 		end
 
 feature -- Status report
@@ -91,7 +107,7 @@ feature -- Measurement
 
 feature {NONE}-- Implementation
 
-	storage: LINKED_LIST [separate G]
+	storage: LINKED_LIST [ CLIENT]
 			-- Implementation.
 
 invariant

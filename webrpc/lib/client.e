@@ -19,49 +19,55 @@ create
 
 feature -- make
 
-make (new_client_id : separate STRING; new_client_token : separate STRING) --; new_client_socket : separate WEB_SOCKET)
+make (new_client_id :  STRING; new_client_token : STRING)
 do
 	id := new_client_id
 	token := new_client_token
---	socket := new_client_socket
+	create messages.make(3)
+	messages.automatic_grow
 end
 
 feature -- Access
 
-client_id : separate STRING
+client_id : STRING
 do
 	Result := id
 end
 
-client_token : separate STRING
+client_token : STRING
 do
 	Result := token
 end
 
---client_socket : detachable separate WEB_SOCKET
---do
---	Result := socket
---end
-
 feature -- comparsion
 
 is_equal( other :   CLIENT ) : BOOLEAN
-local
-	temp, temp_other : STRING
 do
 
-	create temp_other.make_from_separate (other.client_id)
-	create temp.make_from_separate (id)
-	Result := temp.is_equal (temp_other) -- AND token.same_string (other.client_token)
+	Result := id.is_equal (other.client_id) -- AND token.same_string (other.client_token)
+end
+
+add_message (json_string : STRING)
+do
+	messages.force (json_string)
+end
+
+get_message : STRING
+do
+	Result := ""
+	if messages.count > 0 then
+		messages.start
+		Result := messages.item
+		messages.remove
+	end
 end
 
 
 
 feature {NONE} -- Internal
 
-	id : separate STRING
-	token : separate STRING
---	socket :  separate WEB_SOCKET
-
+	id :  STRING
+	token : STRING
+	messages : ARRAYED_LIST[STRING]
 
 end
