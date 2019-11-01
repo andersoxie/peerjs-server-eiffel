@@ -18,13 +18,13 @@
 			<concurrency support="scoop" use="scoop"/>
 			<void_safety support="transitional" use="transitional"/>
 		</capability>
-		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
-		<library name="json" location="$ISE_LIBRARY\contrib\library\text\parser\json\library\json-safe.ecf">
+		<library name="base" location="iron:base:base.ecf"/>
+		<library name="json" location="iron:json:library\json.ecf">
 			<option warning="false">
 			</option>
 		</library>
-		<library name="json_ext" location="\home\anders\github_eiffel_liraries\json_ext_original\json_ext\json_ext.ecf"/>
-		<library name="time" location="$ISE_LIBRARY\library\time\time-safe.ecf"/>
+		<library name="json_ext" location="iron:json_ext:json_ext.ecf"/>
+		<library name="time" location="iron:time:time.ecf"/>
 		<cluster name="peer_eiffel" location=".\" recursive="true"/>
 	</target>
 	<target name="test" extends="peer_eiffel">
@@ -42,7 +42,7 @@
 		<capability>
 			<concurrency support="scoop" use="scoop"/>
 		</capability>
-		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf"/>
-		<cluster name="tests" location="\home\anders\git-repositories\Wunderlistreplacement\webrpc\lib\tests\"/>
+		<library name="testing" location="iron:testing:testing.ecf"/>
+		<cluster name="tests" location=".\tests\"/>
 	</target>
 </system>
