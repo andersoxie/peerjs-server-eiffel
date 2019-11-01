@@ -62,8 +62,6 @@ feature -- Basic operations
 				h.set_connect_timeout (5_000) -- milliseconds = 5 seconds
 
 
-				h.keep_proxy_host (True) -- NOTE AJP: Added this line from new example since I want the url given by the user to be kept in the respons to continue surfing at that site-url
-
 				h.execute (request, response)
 			end
 

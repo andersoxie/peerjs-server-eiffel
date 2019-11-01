@@ -20,23 +20,23 @@
 		</capability>
 		<variable name="ssl_enabled" value="true"/>
 		<library name="base" location="iron:base:base.ecf"/>
-		<library name="cypress_consumer" location="iron:cypress:consumer.ecf"/>
-		<library name="html" location="\home\anders\github_eiffel_liraries\html\html.ecf"/>
+		<library name="curl" location="$ISE_LIBRARY\library\cURL\cURL.ecf"/>
+		<library name="cypress_consumer" location="$ISE_LIBRARY\contrib\library\web\authentication\oauth\cypress\consumer\consumer.ecf"/>
 		<library name="http" location="iron:http:http.ecf"/>
 		<library name="http_client" location="iron:http_client:http_client.ecf"/>
 		<library name="json" location="iron:json:library\json.ecf"/>
 		<library name="json_ext" location="iron:json_ext:json_ext.ecf" readonly="false"/>
 		<library name="net_ssl" location="iron:netssl:net_ssl.ecf"/>
-		<library name="peereiffel" location="\home\anders\git-repositories\Wunderlistreplacement\webrpc\lib\peerEiffel.ecf"/>
+		<library name="peereiffel" location=".\lib\peerEiffel.ecf"/>
 		<library name="testing" location="iron:testing:testing.ecf"/>
 		<library name="time" location="iron:time:time.ecf"/>
 		<library name="web_socket_client" location="iron:websocket:client\web_socket_client.ecf">
 			<renaming old_name="WEB_SOCKET" new_name="WEB_SOCKET_DUPLICATE"/>
 		</library>
-		<library name="wsf" location="iron:ewf:wsf\wsf.ecf"/>
-		<library name="wsf_proxy" location="\home\anders\github_eiffel_liraries\proxy-improvements\EWF\library\server\wsf_proxy\wsf_proxy-safe.ecf"/>
-		<library name="wsf_standalone" location="iron:wsf:connector\standalone.ecf"/>
-		<library name="wsf_standalone_websocket" location="iron:wsf:connector\standalone_websocket.ecf"/>
-		<cluster name="peer_server" location="\home\anders\git-repositories\Wunderlistreplacement\webrpc\"/>
+		<library name="wsf" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\wsf.ecf"/>
+		<library name="wsf_proxy" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf_proxy\wsf_proxy.ecf"/>
+		<library name="wsf_standalone" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\standalone.ecf"/>
+		<library name="wsf_standalone_websocket" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\standalone_websocket.ecf"/>
+		<cluster name="peer_server" location=".\"/>
 	</target>
 </system>
