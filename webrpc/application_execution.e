@@ -120,6 +120,9 @@ feature -- Basic operations
 			elseif request.path_info.same_string_general ("/send") then
 				create {WSF_FILE_RESPONSE} mesgf.make_with_content_type ({HTTP_MIME_TYPES}.text_html ,"send.html")
 				response.send (mesgf)
+			elseif request.path_info.same_string_general ("/sendeiffelexternal") then
+				create {WSF_FILE_RESPONSE} mesgf.make_with_content_type ({HTTP_MIME_TYPES}.text_html ,"sendeiffelexternal.html")
+				response.send (mesgf)
 			elseif request.path_info.same_string_general ("/sendeiffel") then
 				create {WSF_FILE_RESPONSE} mesgf.make_with_content_type ({HTTP_MIME_TYPES}.text_html ,"sendeiffel.html")
 --				response.put_header_line ("Access-Control-Allow-Origin: *") -- TODO Only for testing
@@ -131,6 +134,9 @@ feature -- Basic operations
 				response.send (mesg)
 			elseif request.path_info.same_string_general ("/receiveeiffel") then
 				create {WSF_FILE_RESPONSE} mesg.make_with_content_type ({HTTP_MIME_TYPES}.text_html ,"receiveeiffel.html")
+				response.send (mesg)
+			elseif request.path_info.same_string_general ("/receiveeiffelexternal") then
+				create {WSF_FILE_RESPONSE} mesg.make_with_content_type ({HTTP_MIME_TYPES}.text_html ,"receiveeiffelexternal.html")
 				response.send (mesg)
 
 
@@ -416,6 +422,10 @@ feature -- Websocket execution
 
 
 					create new_webRPC_data.make_from_json (a_message)
+					io.error.put_string("INCOMING MESSAGE")
+					io.error.new_line
+					io.error.put_string (a_message)
+					io.error.new_line
 					if not new_webrpc_data.type.is_equal ("HEARTBEAT") then
 
 						create send_data.make( new_webrpc_data.type, client_id, new_webrpc_data.get_dst, new_webrpc_data.get_payload)
@@ -427,7 +437,7 @@ feature -- Websocket execution
 						io.error.new_line
 
 
-						create client_to_send_to.make (new_webrpc_data.get_dst, "dummy_token")--, ws  ) --ws is not used in cmparsion so I ust use the incoming socket for the serach object.
+						create client_to_send_to.make (new_webrpc_data.get_dst, "dummy_token")
 
 						webrpc_connected_clients_send_command_to_client(webrpc_connected_clients, new_webrpc_data.get_dst, json_string_to_send)
 					else
@@ -435,25 +445,21 @@ feature -- Websocket execution
 						sep_client_id := client_id.out
 						json_string_to_heartbeat_client := webrpc_connected_clients_get_command_to_client(webrpc_connected_clients, sep_client_id)
 						create string_to_send.make_from_separate (json_string_to_heartbeat_client)
-						if string_to_send.count > 0 then
+
+
+
+
+						from until string_to_send.count = 0 loop
 
 							io.error.put_string("SENDING DATA")
 							io.error.new_line
 							io.error.put_string(string_to_send)
 							io.error.new_line
 
-							string_to_send.replace_substring_all ("\%"", "%"")
-							string_to_send.replace_substring_all ("\\", "\")
-							string_to_send.replace_substring_all ("%"payload%":%"", "%"payload%":")
-							string_to_send.replace_substring_all ("%"}%"}", "%"}}")
-
-
-
-							io.error.put_string("SENDING CLEANED DATA")
-							io.error.new_line
-							io.error.put_string(string_to_send)
-							io.error.new_line
 							ws.send_text ( string_to_send)
+							json_string_to_heartbeat_client := webrpc_connected_clients_get_command_to_client(webrpc_connected_clients, sep_client_id)
+							create string_to_send.make_from_separate (json_string_to_heartbeat_client)
+
 						end
 					end
 

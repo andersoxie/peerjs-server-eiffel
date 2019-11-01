@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-20-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-20-0 http://www.eiffel.com/developers/xml/configuration-1-20-0.xsd" name="peer_eiffel" uuid="8996DBA5-2452-4E87-9105-717FCFD29253" library_target="peer_eiffel">
 	<target name="peer_eiffel">
-		<root class="ANY" feature="default_create"/>
+		<root all_classes="true"/>
 		<file_rule>
 			<exclude>/.git$</exclude>
 			<exclude>/.svn$</exclude>
@@ -24,10 +24,25 @@
 			</option>
 		</library>
 		<library name="json_ext" location="\home\anders\github_eiffel_liraries\json_ext_original\json_ext\json_ext.ecf"/>
-		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time-safe.ecf"/>
-		<cluster name="peer_eiffel" location=".\" recursive="true">
-			<tests name="tests" location="\home\anders\git-repositories\Wunderlistreplacement\webrpc\lib\tests\"/>
-		</cluster>
+		<cluster name="peer_eiffel" location=".\" recursive="true"/>
+	</target>
+	<target name="test" extends="peer_eiffel">
+		<root class="ANY" feature="default_create"/>
+		<file_rule>
+			<exclude>/.git$</exclude>
+			<exclude>/.svn$</exclude>
+			<exclude>/CVS$</exclude>
+			<exclude>/EIFGENs$</exclude>
+			<exclude>/tests$</exclude>
+		</file_rule>
+		<option profile="false">
+		</option>
+		<setting name="console_application" value="false"/>
+		<capability>
+			<concurrency support="scoop" use="scoop"/>
+		</capability>
+		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf"/>
+		<cluster name="tests" location="\home\anders\git-repositories\Wunderlistreplacement\webrpc\lib\tests\"/>
 	</target>
 </system>

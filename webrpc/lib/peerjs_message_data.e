@@ -18,21 +18,17 @@ create
 feature
 
 	type : STRING
---	payload : detachable JSON_OBJECT
 	dst: detachable STRING
 	src: detachable STRING
---	payload_string: detachable STRING
 	payload: detachable STRING
 
 convertible_features (a_object: ANY): ARRAY [STRING]
 		-- <Precursor>
 	once
---		Result := <<"type", "payload","dst", "src", "payload_string">>
 		Result := <<"type", "payload","dst", "src">>
 	end
 
 make_from_json (a_json: STRING)
-		-- <Precursor>
 	require else											-- This must be here because the ancestor is False.
 		True												    --	Leaving it False, will cause this to fail.
 	local
@@ -43,13 +39,27 @@ make_from_json (a_json: STRING)
 		check attached_object: attached l_object end		  -- This proves that our JSON parsing was okay.
 
 		type := json_object_to_json_string_representation_attached ("type", l_object)
---		payload := json_object_to_json_object (l_object, 1)
 		dst := json_object_to_json_string_representation ("dst", l_object)
 		src := json_object_to_json_string_representation ("src", l_object)
---		payload_string := json_object_to_json_string_representation ("payload", l_object)
 		payload := json_object_to_json_string_representation ("payload", l_object)
 
---		project_name := json_object_to_json_string_representation_attached ("project_name", l_object)
+
+
+		io.error.put_string("JSONSTRING")
+		io.error.new_line
+		io.error.put_string(a_json)
+		io.error.new_line
+
+
+		io.error.put_string("PAYLOAD")
+		io.error.new_line
+		if attached payload as p then
+			io.error.put_string(p)
+		else
+			io.error.put_string("No PAYLOAD!!!")
+		end
+		io.error.new_line
+
 	end
 	get_dst : STRING
 	do
@@ -59,6 +69,16 @@ make_from_json (a_json: STRING)
 			Result := ""
 		end
 	end
+
+	get_src : STRING
+	do
+		if attached src as res then
+			Result := res
+		else
+			Result := ""
+		end
+	end
+
 
 	get_payload : STRING
 	do
