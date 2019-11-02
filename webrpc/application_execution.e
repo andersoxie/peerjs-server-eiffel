@@ -62,6 +62,7 @@ feature -- Basic operations
 				h.set_connect_timeout (5_000) -- milliseconds = 5 seconds
 
 
+
 				h.execute (request, response)
 			end
 
@@ -494,24 +495,24 @@ feature -- Websocket execution
 
 
 
-		webrpc_connected_clients_remove( connect_clinet_container : separate CONNECTED_CLIENTS; client : separate STRING )
+		webrpc_connected_clients_remove( connect_client_container : separate CONNECTED_CLIENTS; client : separate STRING )
 		do
-			connect_clinet_container.remove(client)
+			connect_client_container.remove(client)
 		end
 
-		webrpc_connect_clients_put_client( connect_clinet_container : separate CONNECTED_CLIENTS; client, token : separate STRING  )
+		webrpc_connect_clients_put_client( connect_client_container : separate CONNECTED_CLIENTS; client, token : separate STRING  )
 		do
-			connect_clinet_container.put_client( client, token)
+			connect_client_container.put_client( client, token)
 		end
 
-		webrpc_connected_clients_send_command_to_client(connect_clinet_container : separate CONNECTED_CLIENTS; client_destination, json_string : separate STRING)
+		webrpc_connected_clients_send_command_to_client(connect_client_container : separate CONNECTED_CLIENTS; client_destination, json_string : separate STRING)
 		do
-			connect_clinet_container.send_command_to_client(client_destination, json_string)
+			connect_client_container.post_command_to_client(client_destination, json_string)
 		end
 
-		webrpc_connected_clients_get_command_to_client (connect_clinet_container : separate CONNECTED_CLIENTS; client_destination : separate STRING) : separate STRING
+		webrpc_connected_clients_get_command_to_client (connect_client_container : separate CONNECTED_CLIENTS; client_destination : separate STRING) : separate STRING
 		do
-			Result := connect_clinet_container.get_command_to_client(client_destination)
+			Result := connect_client_container.consume_client_command(client_destination)
 		end
 
 

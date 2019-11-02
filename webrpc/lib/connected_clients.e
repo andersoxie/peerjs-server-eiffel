@@ -1,8 +1,11 @@
 note
-	description: "Summary description for {CONNECTED_CLIENTS}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Contains currently connected clients"
+	purpose: "[
+			To keep track of conencted clients
+		]"
+	design_history: "[
+
+		]"
 
 class
 	CONNECTED_CLIENTS
@@ -28,24 +31,24 @@ feature -- Initialization
 
 feature -- Element change
 
-	put_client (id, token: separate STRING )
-			-- Store element.
+	put_client (a_id, a_token: separate STRING )
+			-- Create and store a client
 		require
 			not_full: not is_full
 		do
-			storage.extend ( create {CLIENT}.make (create {STRING}.make_from_separate (id), create {STRING}.make_from_separate (token)))
+			storage.extend ( create {CLIENT}.make (create {STRING}.make_from_separate (a_id), create {STRING}.make_from_separate (a_token)))
 		ensure
 			count_incremented: count = old count + 1
 			not_empty: not is_empty
 		end
 
-	remove (client: separate STRING )
-			-- Consume an element.
+	remove (a_client_id: separate STRING )
+			-- Remove an element.
 		require
 			not_empty: not is_empty
 		do
 			storage.start
-			storage.search (create {CLIENT}.make (create {STRING}.make_from_separate (client),""))
+			storage.search (create {CLIENT}.make (create {STRING}.make_from_separate (a_client_id),""))
 			if not storage.exhausted then
 				storage.remove
 			end
@@ -54,23 +57,25 @@ feature -- Element change
 			not_full: not is_full
 		end
 
-		send_command_to_client(client_destination, json_string: separate STRING)
+	post_command_to_client(a_client_destination, a_json_string: separate STRING)
+			-- Puts the message in the clients "mailbox"
 		do
 			storage.start
-			storage.search (create {CLIENT}.make (create {STRING}.make_from_separate (client_destination),""))
+			storage.search (create {CLIENT}.make (create {STRING}.make_from_separate (a_client_destination),""))
 			if not storage.exhausted then
-				storage.item.add_message( create {STRING}.make_from_separate (json_string))
+				storage.item.add_message( create {STRING}.make_from_separate (a_json_string)) -- Store it in the client since we do not have access to the clients socket in this SCOOP region
 			end
 			-- ensure that it is added and that the size is +1 and added at the end.
 		end
 
-		get_command_to_client(client : separate STRING ) : separate STRING
+	consume_client_command(a_client_id : separate STRING ) : separate STRING
+			-- Returns an empty STRING if no message que is empty
 		do
 			Result := ""
 			storage.start
-			storage.search (create {CLIENT}.make (create {STRING}.make_from_separate (client),""))
+			storage.search (create {CLIENT}.make (create {STRING}.make_from_separate (a_client_id),""))
 			if not storage.exhausted then
-				Result := storage.item.get_message.out
+				Result := storage.item.consume_message.out
 			end
 		end
 
