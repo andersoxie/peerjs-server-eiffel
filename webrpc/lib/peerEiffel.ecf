@@ -25,6 +25,8 @@
 		</library>
 		<library name="json_ext" location="iron:json_ext:json_ext.ecf"/>
 		<library name="time" location="iron:time:time.ecf"/>
+		<library name="wsf" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\wsf.ecf"/>
+		<library name="wsf_standalone_websocket" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\standalone_websocket.ecf"/>
 		<cluster name="peer_eiffel" location=".\" recursive="true"/>
 	</target>
 	<target name="test" extends="peer_eiffel">

@@ -19,11 +19,6 @@ inherit
 
 	LOGIN_WITH_GITHUB_CONSTANTS
 
-	WSF_URI_REWRITER
-	rename
-		uri as proxy_uri
-	end
-
 	WSF_TIMEOUT_UTILITIES
 		export
 			{NONE} all
@@ -39,39 +34,7 @@ create
 feature -- Basic operations
 
 
-	feature -- Helpers
 
-		proxy_uri (a_request: WSF_REQUEST): STRING
-				-- Request uri rewriten as url.
-			do
---				Result := a_request.request_uri
-				Result := ""
-			end
-
-
-
-
-		send_proxy_response (a_remote: READABLE_STRING_8; a_rewriter: detachable WSF_URI_REWRITER)
-			local
-				h: WSF_SIMPLE_REVERSE_PROXY_HANDLER
-			do
-				create h.make (a_remote)
-				h.set_uri_rewriter (a_rewriter)
-				h.set_uri_rewriter (create {WSF_AGENT_URI_REWRITER}.make (agent proxy_uri))
-				h.set_timeout (30) -- 30 seconds
-				h.set_connect_timeout (5_000) -- milliseconds = 5 seconds
-
-
-
-				h.execute (request, response)
-			end
-
-
-	webrpc_connected_clients: separate CONNECTED_CLIENTS
-
-		once ("PROCESS")
-			create Result.make_with_capacity (10)
-		end
 
 	initialize
 	local
@@ -361,24 +324,16 @@ feature -- Websocket execution
 			create Result.make (ws, Current)
 		end
 
-feature -- Websocket execution
-
 	on_open (ws: WEB_SOCKET)
-	local
-
-		sep_client_id, sep_token_id:    separate STRING
+		local
+		handle_client_connection_attempt : PEER_CLIENT_COMMUNICATION_HANDLER
 		do
 			set_timer_delay (1) -- Orginal was 1 second
 --			ws.socket.set_timeout_ns(1000000000)
 
 			if ws.request.request_uri.has_substring ("apptesttest") then
-				if attached ws.request.string_item ("id") as  client_id and then not client_id.is_equal("null")then
-					if attached ws.request.string_item ("token") as client_token then
-						sep_client_id := client_id.out
-						sep_token_id := client_token.out
-						webrpc_connect_clients_put_client( webrpc_connected_clients, sep_client_id, sep_token_id)
-					end
-				end
+				create handle_client_connection_attempt.make
+				handle_client_connection_attempt.add_client(ws.request)
 			else
 
 				if attached ws.request.cookie ({LOGIN_WITH_GITHUB_CONSTANTS}.oauth_user_login) as user2 then
@@ -404,6 +359,7 @@ feature -- Websocket execution
 
 	on_text (ws: WEB_SOCKET; a_message: READABLE_STRING_8)
 		local
+			handle_client_connection_attempt : PEER_CLIENT_COMMUNICATION_HANDLER
 			i: INTEGER
 			cmd_name: READABLE_STRING_8
 			new_webRPC_data : PEERJS_MESSAGE_DATA
@@ -413,59 +369,16 @@ feature -- Websocket execution
 			json_string_to_heartbeat_client : separate STRING
 			sep_client_id : separate STRING
 			string_to_send : STRING
+
+
+
 		do
 
 			if ws.request.request_uri.has_substring ("apptesttest") then
-
-				if attached ws.request.string_item ("id") as  client_id then
-
-
-					create new_webRPC_data.make_from_json (a_message)
-					io.error.put_string("INCOMING MESSAGE")
-					io.error.new_line
-					io.error.put_string (a_message)
-					io.error.new_line
-					if not new_webrpc_data.type.is_equal ("HEARTBEAT") then
-
-						create send_data.make( new_webrpc_data.type, client_id, new_webrpc_data.get_dst, new_webrpc_data.get_payload)
-						json_string_to_send := send_data.json_out
-
-						io.error.put_string("INCOMING DATA")
-						io.error.new_line
-						io.error.put_string(json_string_to_send)
-						io.error.new_line
+				create handle_client_connection_attempt.make
+				handle_client_connection_attempt.handle_message(ws, ws.request, a_message)
 
 
-						create client_to_send_to.make (new_webrpc_data.get_dst, "dummy_token")
-
-						webrpc_connected_clients_send_command_to_client(webrpc_connected_clients, new_webrpc_data.get_dst, json_string_to_send)
-					else
-						-- HEARTBEAT
-						sep_client_id := client_id.out
-						json_string_to_heartbeat_client := webrpc_connected_clients_get_command_to_client(webrpc_connected_clients, sep_client_id)
-						create string_to_send.make_from_separate (json_string_to_heartbeat_client)
-
-
-
-
-						from until string_to_send.count = 0 loop
-
-							io.error.put_string("SENDING DATA")
-							io.error.new_line
-							io.error.put_string(string_to_send)
-							io.error.new_line
-
-							ws.send_text ( string_to_send)
-							json_string_to_heartbeat_client := webrpc_connected_clients_get_command_to_client(webrpc_connected_clients, sep_client_id)
-							create string_to_send.make_from_separate (json_string_to_heartbeat_client)
-
-						end
-					end
-
-				end
-
-
---				send (a_message)
 			else
 				if attached ws.request.cookie ({LOGIN_WITH_GITHUB_CONSTANTS}.oauth_user_login) as user2 then
 					write_debug_message (ws, "You are: "  + user2.string_representation )
@@ -476,18 +389,14 @@ feature -- Websocket execution
 	on_close (ws: WEB_SOCKET)
 			-- Called after the WebSocket connection is closed.
 		local
-			client_to_be_removed : separate CLIENT
-			sep_client_id : separate STRING
+			handle_client_connection_attempt : PEER_CLIENT_COMMUNICATION_HANDLER
 		do
 			if ws.request.request_uri.has_substring ("apptesttest") then
-				if attached ws.request.string_item ("id") as client_id then
-					if attached ws.request.string_item ("token") as client_token then
-						if not client_id.is_equal ("null") then
-							sep_client_id := client_id.out
-								webrpc_connected_clients_remove(webrpc_connected_clients, sep_client_id)
-						end
-					end
-				end
+
+				create handle_client_connection_attempt.make
+				handle_client_connection_attempt.remove_client( ws.request)
+
+
 			else
 				ws.put_error ("Connection closed")
 			end
@@ -495,25 +404,6 @@ feature -- Websocket execution
 
 
 
-		webrpc_connected_clients_remove( connect_client_container : separate CONNECTED_CLIENTS; client : separate STRING )
-		do
-			connect_client_container.remove(client)
-		end
-
-		webrpc_connect_clients_put_client( connect_client_container : separate CONNECTED_CLIENTS; client, token : separate STRING  )
-		do
-			connect_client_container.put_client( client, token)
-		end
-
-		webrpc_connected_clients_send_command_to_client(connect_client_container : separate CONNECTED_CLIENTS; client_destination, json_string : separate STRING)
-		do
-			connect_client_container.post_command_to_client(client_destination, json_string)
-		end
-
-		webrpc_connected_clients_get_command_to_client (connect_client_container : separate CONNECTED_CLIENTS; client_destination : separate STRING) : separate STRING
-		do
-			Result := connect_client_container.consume_client_command(client_destination)
-		end
 
 
 	on_timer (ws: WEB_SOCKET)
