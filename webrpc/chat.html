@@ -3,18 +3,23 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width">
-        <title>Peer-to-Peer Cue System --- Reciever</title>
+        <title>Peer-to-Peer Cue System --- Sender</title>
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <table class="display">
+        <h1>Peer-to-Peer Cue System --- Sender</h1>
+
+        <table class="control">
             <tr>
                 <td class="title">Status:</td>
                 <td class="title">Messages:</td>
             </tr>
             <tr>
                 <td>
-                    <div id="receiver-id" style="font-weight: bold;" title="Copy this ID to the input on send.html.">ID:</div>
+                    <input type="text" id="receiver-id" title="Input the ID from friend"  placeholder="Your Friends ID">
+                    <input type="text" id="sender-id" title="Input your ID"  placeholder="Your ID">
+                    <button id="connect-button">Connect friend</button>
+                    <button id="connect-to-server-button">Connect to server</button>
                 </td>
                 <td>
                     <input type="text" id="sendMessageBox" placeholder="Enter a message..." autofocus="true" />
@@ -26,7 +31,6 @@
                 <td><div id="status" class="status"></div></td>
                 <td><div class="message" id="message"></div></td>
             </tr>
-            </tr>
         </table>
 
         <script src="https://unpkg.com/peerjs@1.0.0/dist/peerjs.min.js"></script>
@@ -34,45 +38,54 @@
             (function () {
 
                 var lastPeerId = null;
-                var peer = null; // Own peer object
-                var peerId = null;
+                var peer = null; // own peer object
                 var conn = null;
-                var recvId = document.getElementById("receiver-id");
+                var recvIdInput = document.getElementById("receiver-id");
+	        var sendIdInput = document.getElementById("sender-id");
+
                 var status = document.getElementById("status");
                 var message = document.getElementById("message");
                 var sendMessageBox = document.getElementById("sendMessageBox");
                 var sendButton = document.getElementById("sendButton");
                 var clearMsgsButton = document.getElementById("clearMsgsButton");
+                var connectButton = document.getElementById("connect-button");
+            var cueString = "<span class=\"cueMsg\">Cue: </span>";
+	                    var connectServerButton = document.getElementById("connect-to-server-button");
+
 
                 /**
                  * Create the Peer object for our end of the connection.
-                 *
+            *
+
+Copied from example: https://github.com/jmcker/Peer-to-Peer-Cue-System
+
+	    
                  * Sets up callbacks that handle any events related to our
                  * peer object.
                  */
-                 function initialize() {
+                function initialize() {
                     // Create own peer object with connection to shared PeerJS server
-//                    peer = new Peer(   {host: 'bsharpabtodo.duckdns.org', port: 9000, path: '/apptesttest', debug: 3}
-           //         peer = new Peer(   {host: 'localhost', port: 9092, path: '/apptesttest', proxied: true, secure: true, debug: 3});
-                   // peer = new Peer(null,    {host: 'localhost', port: 9001, secure: false, path: '/myapp'});
-            peer = new Peer(  'EiffelTestRec',  {host: 'localhost', port: 9092, path: '/apptesttest', secure: true, debug: 3});
-
-//	                        peer = new Peer(null,   { debug: 3} );
-
+                    //Local Host example
+                    peer = new Peer(  sendIdInput.value,  {host: 'localhost', port: 9092, path: '/apptesttest', secure: true, debug: 3});
+                    //Remote host example
+//                    peer = new Peer(   sendIdInput.value,  {host: 'bsharpabtodo.duckdns.org', port: 9999, path: '/apptesttest', secure: true, debug: 3});
+	    
+                    console.log('After coonecting to Eiffel Peer server ');
+  
                     peer.on('open', function (id) {
+                        console.log('On open ');
                         // Workaround for peer.reconnect deleting previous id
                         if (peer.id === null) {
                             console.log('Received null id from peer open');
-                            peer.id = lastPeerId;
+                            peer.id = sendIdInput.value;
                         } else {
-                            lastPeerId = 'EiffelTestRec';
+                            lastPeerId = sendIdInput.value;
                         }
 
                         console.log('ID: ' + peer.id);
-                        recvId.innerHTML = "ID: " + peer.id;
-                        status.innerHTML = "Awaiting connection...";
                     });
-                    peer.on('connection', function (c) {
+
+	            peer.on('connection', function (c) {
                         // Allow only a single connection
                         if (conn) {
                             c.on('open', function() {
@@ -88,24 +101,30 @@
                         ready();
                     });
                     peer.on('disconnected', function () {
+                        console.log('On disconnect ');
                         status.innerHTML = "Connection lost. Please reconnect";
                         console.log('Connection lost. Please reconnect');
 
                         // Workaround for peer.reconnect deleting previous id
-                        peer.id = lastPeerId;
-                        peer._lastServerId = lastPeerId;
+                        peer.id = sendIdInput.value;
+                        peer._lastServerId = sendIdInput.value;
                         peer.reconnect();
                     });
-                    peer.on('close', function() {
+            peer.on('close', function() {
+                        console.log('On close ');
+	    
                         conn = null;
                         status.innerHTML = "Connection destroyed. Please refresh";
                         console.log('Connection destroyed');
                     });
-                    peer.on('error', function (err) {
-                        console.log(err);
-                        alert('' + err);
+            peer.on('error', function (err) {
+	                            console.log('On error ');
+
+                        console.log(err.type);
+//                        alert('' + err);
                     });
                 };
+
 
                 /**
                  * Triggered once a connection has been achieved.
@@ -122,8 +141,40 @@
                         conn = null;
                     });
                 }
+	    
+                /**
+                 * Create the connection between the two Peers.
+                 *
+                 * Sets up callbacks that handle any events related to the
+                 * connection and data received on it.
+                 */
+                function join() {
+                    // Close old connection
+                    if (conn) {
+                        conn.close();
+                    }
 
-  
+                    // Create connection to destination peer specified in the input field
+                    conn = peer.connect(recvIdInput.value, {
+                        reliable: true
+                    });
+
+                    conn.on('open', function () {
+                        status.innerHTML = "Connected to: " + conn.peer;
+                        console.log("Connected to: " + conn.peer);
+
+                    });
+                    // Handle incoming data (messages only since this is the signal sender)
+                    conn.on('data', function (data) {
+                        addMessage("<span class=\"peerMsg\">Peer:</span> " + data);
+                    });
+                    conn.on('close', function () {
+                        status.innerHTML = "Connection closed";
+                    });
+                };
+
+
+
  
                 function addMessage(msg) {
                     var now = new Date();
@@ -143,14 +194,14 @@
                     };
 
                     message.innerHTML = "<br><span class=\"msg-time\">" + h + ":" + m + ":" + s + "</span>  -  " + msg + message.innerHTML;
-                }
+                };
 
                 function clearMessages() {
                     message.innerHTML = "";
                     addMessage("Msgs cleared");
-                }
+                };
 
-                // Listen for enter
+                // Listen for enter in message box
                 sendMessageBox.onkeypress = function (e) {
                     var event = e || window.event;
                     var char = event.which || event.keyCode;
@@ -163,16 +214,19 @@
                         var msg = sendMessageBox.value;
                         sendMessageBox.value = "";
                         conn.send(msg);
-                        console.log("Sent: " + msg)
-                        addMessage("<span class=\"selfMsg\">Self: </span>" + msg);
+                        console.log("Sent: " + msg);
+                        addMessage("<span class=\"selfMsg\">Self: </span> " + msg);
                     }
                 };
                 // Clear messages box
                 clearMsgsButton.onclick = function () {
                     clearMessages();
                 };
+                // Start peer connection on click
+                connectButton.addEventListener('click', join);
+                // Connect to server on click
+				connectServerButton.addEventListener('click', initialize );
 
-                initialize();
             })();
         </script>
     </body>

@@ -48,14 +48,10 @@ feature -- Basic operations
 		local
 			s: STRING
 			dt: HTTP_DATE
-			shutdown_command :  WEBSOCKET_SERVER_SHUTDOWN_COMMAND
 			l_github_service: LOGIN_WITH_GITHUB_SERVICE
 			mesg: WSF_RESPONSE_MESSAGE
 			mesgf: WSF_FILE_RESPONSE
  		do
- 			create shutdown_command
- 			shutdown_command.shutdown_server (Current)
-
 			execute_oauth_session_filter
 
  			-- To send a response we need to setup, the status code and
@@ -79,50 +75,18 @@ feature -- Basic operations
 			elseif request.path_info.same_string_general ("/peer.min.js") then
 				create {WSF_FILE_RESPONSE} mesg.make_with_content_type ({HTTP_MIME_TYPES}.text_javascript ,"peer.min.js")
 				response.send (mesg)
-			elseif request.path_info.same_string_general ("/send") then
-				create {WSF_FILE_RESPONSE} mesgf.make_with_content_type ({HTTP_MIME_TYPES}.text_html ,"send.html")
-				response.send (mesgf)
-			elseif request.path_info.same_string_general ("/sendeiffelexternal") then
-				create {WSF_FILE_RESPONSE} mesgf.make_with_content_type ({HTTP_MIME_TYPES}.text_html ,"sendeiffelexternal.html")
-				response.send (mesgf)
-			elseif request.path_info.same_string_general ("/sendeiffel") then
-				create {WSF_FILE_RESPONSE} mesgf.make_with_content_type ({HTTP_MIME_TYPES}.text_html ,"sendeiffel.html")
---				response.put_header_line ("Access-Control-Allow-Origin: *") -- TODO Only for testing
-
-
-				response.send (mesgf)
-			elseif request.path_info.same_string_general ("/receive") then
-				create {WSF_FILE_RESPONSE} mesg.make_with_content_type ({HTTP_MIME_TYPES}.text_html ,"receive.html")
-				response.send (mesg)
-			elseif request.path_info.same_string_general ("/receiveeiffel") then
-				create {WSF_FILE_RESPONSE} mesg.make_with_content_type ({HTTP_MIME_TYPES}.text_html ,"receiveeiffel.html")
-				response.send (mesg)
-			elseif request.path_info.same_string_general ("/receiveeiffelexternal") then
-				create {WSF_FILE_RESPONSE} mesg.make_with_content_type ({HTTP_MIME_TYPES}.text_html ,"receiveeiffelexternal.html")
-				response.send (mesg)
-
-
 			else
-
-				if request.has_execution_variable ("user") and then attached {STRING_32}request.execution_variable ("user") as user and then (user.is_equal ("andersoxie") or user.is_equal ("LouiseBSharp")  or user.is_equal ("GabijaBSharp")) then
---				if request.has_execution_variable ("user")  then
+				if request.has_execution_variable ("user")  then
 					-- Authenticated case
 					if request.path_info.same_string_general ("/Logout.html") then
 						handle_logout (request, response)
+					elseif request.path_info.same_string_general ("/chat") then
+						create {WSF_FILE_RESPONSE} mesg.make_with_content_type ({HTTP_MIME_TYPES}.text_html ,"chat.html")
+						response.send (mesg)
 					else
-
-						if request.path_info.same_string_general ("/app") then
-							s:=""
-						--	s := websocket_app_html (request.server_name, request.server_port)
-						else
-				 			s := "Hello World!"
-							if attached {STRING_32}request.execution_variable ("user") as user2 then
-								s.append (user2)
-							end
-							create dt.make_now_utc
-							s.append (" (UTC time is " + dt.rfc850_string + ").")
-							s.append ("<p><h1><a href=%"/app%">BSharp AB ToDo</a></h1></p>")
-						end
+			 			s := "Hello World!"
+						create dt.make_now_utc
+						s.append (" (UTC time is " + dt.rfc850_string + ").")
 						response.put_header ({HTTP_STATUS_CODE}.ok, <<["Content-Type", "text/html"], ["Content-Length", s.count.out]>>)
 						response.set_status_code ({HTTP_STATUS_CODE}.ok)
 						response.header.put_content_type_text_html
@@ -148,12 +112,6 @@ feature -- Basic operations
 						handle_login_with_github_callback (request, response)
 					else
 			 			s := "Hello World!"
-
-						if attached request.execution_variable ("user") as user then
-							s.append (user.tagged_out)
-						end
-
-
 						create dt.make_now_utc
 						s.append (" (UTC time is " + dt.rfc850_string + ").")
 						s.append ("<p><h1><a href=%"/login_with_github%">Login with GitHub</a></h1></p>")
@@ -166,10 +124,7 @@ feature -- Basic operations
 							response.header.put_connection_keep_alive
 						end
 						response.put_string (s)
-
 					end
-
-
 				end
 			end
 		end
@@ -303,19 +258,6 @@ feature -- Basic operations
 				end
 			end
 
-feature -- Implementation
-
-
-	write_debug_message (ws: WEB_SOCKET;message : STRING)
-	local
-		env : EXECUTION_ENVIRONMENT
-	do
-		create env
-		if attached env.item ("TEST_COMPUTER") as test then
-				ws.send (Text_frame,message )
-		end
-	end
-
 
 feature -- Websocket execution
 
@@ -330,19 +272,14 @@ feature -- Websocket execution
 		do
 			set_timer_delay (1) -- Orginal was 1 second
 --			ws.socket.set_timeout_ns(1000000000)
+			execute_oauth_session_filter
 
-			if ws.request.request_uri.has_substring ("apptesttest") then
-				create handle_client_connection_attempt.make
-				handle_client_connection_attempt.add_client(ws.request)
-			else
+			if ws.request.has_execution_variable ("user")  then
 
-				if attached ws.request.cookie ({LOGIN_WITH_GITHUB_CONSTANTS}.oauth_user_login) as user2 then
-					write_debug_message (ws, "You are: "  + user2.string_representation )
+				if ws.request.request_uri.has_substring ("apptesttest") then
+					create handle_client_connection_attempt.make
+					handle_client_connection_attempt.add_client(ws.request)
 				end
-
-				ws.put_error ("Connecting")
-				write_debug_message (ws, "Hello, this is a simple demo with Websocket using Eiffel. (/help for more information).%N")
-
 			end
 		end
 
@@ -373,16 +310,9 @@ feature -- Websocket execution
 
 
 		do
-
 			if ws.request.request_uri.has_substring ("apptesttest") then
 				create handle_client_connection_attempt.make
 				handle_client_connection_attempt.handle_message(ws, ws.request, a_message)
-
-
-			else
-				if attached ws.request.cookie ({LOGIN_WITH_GITHUB_CONSTANTS}.oauth_user_login) as user2 then
-					write_debug_message (ws, "You are: "  + user2.string_representation )
-				end
 			end
 		end
 
@@ -392,14 +322,10 @@ feature -- Websocket execution
 			handle_client_connection_attempt : PEER_CLIENT_COMMUNICATION_HANDLER
 		do
 			if ws.request.request_uri.has_substring ("apptesttest") then
-
 				create handle_client_connection_attempt.make
 				handle_client_connection_attempt.remove_client( ws.request)
-
-
-			else
-				ws.put_error ("Connection closed")
 			end
+			ws.put_error ("Connection closed")
 		end
 
 
