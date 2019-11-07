@@ -9,10 +9,12 @@ A first version supports.
 - Only authentication with github. 
 - One need to give an id from the client.
 
-Impelmentaion use
-- path /apptestest
-
+The server is built and tested with Eiffel version 19.05
 
 Update ws.ini to your server configuration
 
-Update github.ini according to the description in the file
+Update github.ini according to the description in the file. In the Eiffel code the callback path is set to login_with_github_callback. If you chose somehting else then update the code and rebuild it.
+
+Start the server and then navigate to https://your.server/chat 
+
+
