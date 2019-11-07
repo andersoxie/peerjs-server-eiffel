@@ -3,29 +3,45 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width">
-        <title>Peer-to-Peer Cue System --- Sender</title>
+        <title>Peer-to-Peer chate example with webrpc tested with Google Chrom</title>
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <h1>Peer-to-Peer Cue System --- Sender</h1>
+        <h1>Peer-to-Peer chat example with webrpc tested with Google Chrom</h1>
 
         <table class="control">
             <tr>
-                <td class="title">Status:</td>
-                <td class="title">Messages:</td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="text" id="receiver-id" title="Input the ID from friend"  placeholder="Your Friends ID">
-                    <input type="text" id="sender-id" title="Input your ID"  placeholder="Your ID">
-                    <button id="connect-button">Connect friend</button>
+              <td>
+		Setup:
+		    <br>
+		    Define your server, port and path.
+		    <br>
+		  <input type="text" id="server-id" title="Input server adress for example localhost or bsharpabtodo.duckdns.org or ..." value="localhost" >
+		  <input type="text" id="port-id" title="Input port number, 9092 or 9999 or..." value="9092">
+		  <input type="text" id="path-id" title="Input application path, for example /apptesttest"  value="/apptesttest">
+		  <br>
+		  <br>
+                  Step 1: add an id of your connection to server and press "Connect to Server".
+		    <br>
+		  <input type="text" id="sender-id" title="Input your ID"  placeholder="Your ID">
                     <button id="connect-to-server-button">Connect to server</button>
-                </td>
-                <td>
+		    <br>
+		    <br>
+                  Step 2: when both you and your friend is connected to the server add your friends id and press "Connect to friend"... wait until both you and your friend are connected.
+		    <br>
+                    <input type="text" id="receiver-id" title="Input the ID from friend"  placeholder="Your Friends ID">
+                    <button id="connect-button">Connect friend</button>
+		    <br>
+		    <br>
+                  Step 3: When you are connected to your friend then write messages and press Enter at keyboard or press the "Send" button. 
+		    <br>
                     <input type="text" id="sendMessageBox" placeholder="Enter a message..." autofocus="true" />
                     <button type="button" id="sendButton">Send</button>
-                    <button type="button" id="clearMsgsButton">Clear Msgs (Local)</button>
                 </td>
+            </tr>
+            <tr>
+                <td class="title">Status:</td>
+                <td class="title">Messages:</td>
             </tr>
             <tr>
                 <td><div id="status" class="status"></div></td>
@@ -37,10 +53,12 @@
         <script type="text/javascript">
             (function () {
 
-                var lastPeerId = null;
                 var peer = null; // own peer object
                 var conn = null;
                 var recvIdInput = document.getElementById("receiver-id");
+                var serverIdInput = document.getElementById("server-id");
+                var portIdInput = document.getElementById("port-id");
+                var pathIdInput = document.getElementById("path-id");
 	        var sendIdInput = document.getElementById("sender-id");
 
                 var status = document.getElementById("status");
@@ -49,39 +67,29 @@
                 var sendButton = document.getElementById("sendButton");
                 var clearMsgsButton = document.getElementById("clearMsgsButton");
                 var connectButton = document.getElementById("connect-button");
-            var cueString = "<span class=\"cueMsg\">Cue: </span>";
+                var cueString = "<span class=\"cueMsg\">Cue: </span>";
 	                    var connectServerButton = document.getElementById("connect-to-server-button");
 
 
                 /**
                  * Create the Peer object for our end of the connection.
-            *
-
-Copied from example: https://github.com/jmcker/Peer-to-Peer-Cue-System
-
-	    
+                 *
+	         * Copied from example: https://github.com/jmcker/Peer-to-Peer-Cue-System
+	         *
                  * Sets up callbacks that handle any events related to our
                  * peer object.
                  */
                 function initialize() {
-                    // Create own peer object with connection to shared PeerJS server
-                    //Local Host example
-                    peer = new Peer(  sendIdInput.value,  {host: 'localhost', port: 9092, path: '/apptesttest', secure: true, debug: 3});
-                    //Remote host example
-//                    peer = new Peer(   sendIdInput.value,  {host: 'bsharpabtodo.duckdns.org', port: 9999, path: '/apptesttest', secure: true, debug: 3});
+
+            // Create own peer object with connection to shared PeerJS eiffel server
+                    peer = new Peer(   sendIdInput.value,  {host: serverIdInput.value, port: portIdInput.value, path: pathIdInput.value, secure: true, debug: 3});
 	    
                     console.log('After coonecting to Eiffel Peer server ');
   
                     peer.on('open', function (id) {
                         console.log('On open ');
-                        // Workaround for peer.reconnect deleting previous id
-                        if (peer.id === null) {
-                            console.log('Received null id from peer open');
-                            peer.id = sendIdInput.value;
-                        } else {
-                            lastPeerId = sendIdInput.value;
-                        }
-
+                        console.log('Received null id from peer open');
+                        peer.id = sendIdInput.value;
                         console.log('ID: ' + peer.id);
                     });
 
@@ -121,7 +129,6 @@ Copied from example: https://github.com/jmcker/Peer-to-Peer-Cue-System
 	                            console.log('On error ');
 
                         console.log(err.type);
-//                        alert('' + err);
                     });
                 };
 
@@ -173,9 +180,6 @@ Copied from example: https://github.com/jmcker/Peer-to-Peer-Cue-System
                     });
                 };
 
-
-
- 
                 function addMessage(msg) {
                     var now = new Date();
                     var h = now.getHours();
@@ -196,11 +200,6 @@ Copied from example: https://github.com/jmcker/Peer-to-Peer-Cue-System
                     message.innerHTML = "<br><span class=\"msg-time\">" + h + ":" + m + ":" + s + "</span>  -  " + msg + message.innerHTML;
                 };
 
-                function clearMessages() {
-                    message.innerHTML = "";
-                    addMessage("Msgs cleared");
-                };
-
                 // Listen for enter in message box
                 sendMessageBox.onkeypress = function (e) {
                     var event = e || window.event;
@@ -217,10 +216,6 @@ Copied from example: https://github.com/jmcker/Peer-to-Peer-Cue-System
                         console.log("Sent: " + msg);
                         addMessage("<span class=\"selfMsg\">Self: </span> " + msg);
                     }
-                };
-                // Clear messages box
-                clearMsgsButton.onclick = function () {
-                    clearMessages();
                 };
                 // Start peer connection on click
                 connectButton.addEventListener('click', join);
