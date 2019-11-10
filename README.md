@@ -12,7 +12,7 @@ A first version supports.
 - Only authentication with github. 
 - One need to give an id from the client.
 
-The server is built and tested with Eiffel version 19.05
+The server is built and tested with Eiffel version 19.05 at Ubuntu
 
 Update ws.ini to your server configuration
 
