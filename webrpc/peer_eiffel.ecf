@@ -25,7 +25,7 @@
 		<library name="http" location="iron:http:http.ecf"/>
 		<library name="http_client" location="iron:http_client:http_client.ecf"/>
 		<library name="json" location="iron:json:library\json.ecf"/>
-		<library name="json_ext" location="iron:json_ext:json_ext.ecf" readonly="false"/>
+		<library name="json_ext" location=".\larry_json_ext\json_ext.ecf" readonly="false"/>
 		<library name="net_ssl" location="iron:netssl:net_ssl.ecf"/>
 		<library name="peereiffel" location=".\lib\peerEiffel.ecf"/>
 		<library name="testing" location="iron:testing:testing.ecf"/>
