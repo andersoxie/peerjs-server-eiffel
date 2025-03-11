@@ -7,6 +7,10 @@ note
 class
 	PEER_CLIENT_COMMUNICATION_HANDLER
 
+inherit
+LOGGABLE
+
+
 create
 	make
 
@@ -45,6 +49,7 @@ feature
 			if attached a_request.string_item ("id") as  client_id then
 				create new_webRPC_data.make_from_json (a_message)
 				if not new_webrpc_data.type.is_equal ("HEARTBEAT") then
+					logger.write_debug ("Peer_client_commuinication, handle_message store message to client when getting a heartbeat: client_id(sending the message):" + client_id + " | message: " + a_message)
 					create send_data.make( new_webrpc_data.type, client_id, new_webrpc_data.get_dst, new_webrpc_data.get_payload)
 					json_string_to_send := send_data.json_out
 					create client_to_send_to.make (new_webrpc_data.get_dst, "dummy_token")
@@ -56,6 +61,7 @@ feature
 					create string_to_send.make_from_separate (json_string_to_heartbeat_client)
 
 					from until string_to_send.count = 0 loop
+						logger.write_debug ("Peer_client_commuinication, handle_message send message to client when getting a heartbeat: client_id(recieving the message):" + client_id + " | message: " + string_to_send)
 						ws.send_text ( string_to_send)
 						json_string_to_heartbeat_client := webrpc_connected_clients_get_command_to_client(webrpc_connected_clients, sep_client_id)
 						create string_to_send.make_from_separate (json_string_to_heartbeat_client)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-20-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-20-0 http://www.eiffel.com/developers/xml/configuration-1-20-0.xsd" name="peer_eiffel" uuid="75D17C20-10A8-4E4C-A059-33D72A2B6AEF" readonly="false">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-23-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-23-0 http://www.eiffel.com/developers/xml/configuration-1-23-0.xsd" name="peer_eiffel" uuid="75D17C20-10A8-4E4C-A059-33D72A2B6AEF" readonly="false">
 	<target name="peer_eiffel">
 		<root class="APPLICATION_TODO" feature="make_and_launch"/>
 		<file_rule>
@@ -7,36 +7,69 @@
 			<exclude>/EIFGENs$</exclude>
 			<exclude>/\.svn$</exclude>
 		</file_rule>
-		<option warning="true" manifest_array_type="mismatch_warning">
+		<option warning="warning" is_obsolete_iteration="true" manifest_array_type="mismatch_warning">
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
-			<warning name="obsolete_feature" enabled="false"/>
+			<warning name="obsolete_feature" value="none"/>
 		</option>
 		<setting name="console_application" value="true"/>
 		<setting name="dead_code_removal" value="feature"/>
 		<capability>
 			<catcall_detection support="none"/>
-			<concurrency support="scoop" use="scoop"/>
-			<void_safety support="transitional" use="transitional"/>
+			<concurrency support="scoop"/>
+			<void_safety support="transitional"/>
 		</capability>
 		<variable name="ssl_enabled" value="true"/>
-		<library name="base" location="iron:base:base.ecf"/>
-		<library name="curl" location="$ISE_LIBRARY\library\cURL\cURL.ecf"/>
-		<library name="cypress_consumer" location="$ISE_LIBRARY\contrib\library\web\authentication\oauth\cypress\consumer\consumer.ecf"/>
-		<library name="http" location="iron:http:http.ecf"/>
-		<library name="http_client" location="iron:http_client:http_client.ecf"/>
-		<library name="json" location="iron:json:library\json.ecf"/>
-		<library name="json_ext" location="iron:json_ext:json_ext.ecf" readonly="false"/>
-		<library name="net_ssl" location="iron:netssl:net_ssl.ecf"/>
-		<library name="peereiffel" location=".\lib\peerEiffel.ecf"/>
-		<library name="testing" location="iron:testing:testing.ecf"/>
-		<library name="time" location="iron:time:time.ecf"/>
+		<library name="base" location="iron:base:base.ecf">
+			<option warning="none"/>
+		</library>
+		<library name="curl" location="$ISE_LIBRARY\library\cURL\cURL.ecf">
+			<option warning="none"/>
+		</library>
+		<library name="cypress_consumer" location="$ISE_LIBRARY\contrib\library\web\authentication\oauth\cypress\consumer\consumer.ecf">
+			<option warning="none"/>
+		</library>
+		<library name="http" location="iron:http:http.ecf">
+			<option warning="none"/>
+		</library>
+		<library name="http_client" location="iron:http_client:http_client.ecf">
+			<option warning="none"/>
+		</library>
+		<library name="json" location="iron:json:library\json.ecf">
+			<option warning="none"/>
+		</library>
+		<library name="json_ext" location="C:\home\anders\github_eiffel_liraries\json_ext_original\json_ext-save-2025-02-18\json_ext.ecf" readonly="false">
+			<option warning="none"/>
+		</library>
+		<library name="net_ssl" location="iron:netssl:net_ssl.ecf">
+			<option warning="none"/>
+		</library>
+		<library name="peereiffel" location=".\lib\peerEiffel.ecf">
+			<option warning="none"/>
+		</library>
+		<library name="testing" location="iron:testing:testing.ecf">
+			<option warning="none"/>
+		</library>
+		<library name="time" location="iron:time:time.ecf">
+			<option warning="none"/>
+		</library>
 		<library name="web_socket_client" location="iron:websocket:client\web_socket_client.ecf">
+			<option warning="none"/>
 			<renaming old_name="WEB_SOCKET" new_name="WEB_SOCKET_DUPLICATE"/>
 		</library>
-		<library name="wsf" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\wsf.ecf"/>
-		<library name="wsf_proxy" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf_proxy\wsf_proxy.ecf"/>
-		<library name="wsf_standalone" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\standalone.ecf"/>
-		<library name="wsf_standalone_websocket" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\standalone_websocket.ecf"/>
-		<cluster name="peer_server" location=".\"/>
+		<library name="wsf" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\wsf.ecf">
+			<option warning="none"/>
+		</library>
+		<library name="wsf_proxy" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf_proxy\wsf_proxy.ecf">
+			<option warning="none"/>
+		</library>
+		<library name="wsf_standalone" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\standalone.ecf">
+			<option warning="none"/>
+		</library>
+		<library name="wsf_standalone_websocket" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\standalone_websocket.ecf">
+			<option warning="none"/>
+		</library>
+		<cluster name="peer_server" location=".\">
+			<option warning="none" is_obsolete_iteration="true"/>
+		</cluster>
 	</target>
 </system>

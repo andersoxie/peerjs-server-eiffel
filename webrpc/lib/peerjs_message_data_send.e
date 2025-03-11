@@ -33,7 +33,7 @@ class
 	PEERJS_MESSAGE_DATA_SEND
 
 inherit
-	JSON_SERIALIZABLE
+	JSON_EXT_SERIALIZABLE
 		redefine
 			json_out -- Refined for simple injection of `payload'.
 		end

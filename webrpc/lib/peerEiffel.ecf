@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-20-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-20-0 http://www.eiffel.com/developers/xml/configuration-1-20-0.xsd" name="peer_eiffel" uuid="8996DBA5-2452-4E87-9105-717FCFD29253" library_target="peer_eiffel">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-23-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-23-0 http://www.eiffel.com/developers/xml/configuration-1-23-0.xsd" name="peer_eiffel" uuid="75D17C20-10A8-4E4C-A059-33D72A2B8AFF" library_target="peer_eiffel">
 	<target name="peer_eiffel">
 		<root all_classes="true"/>
 		<file_rule>
@@ -9,25 +9,42 @@
 			<exclude>/EIFGENs$</exclude>
 			<exclude>/tests$</exclude>
 		</file_rule>
-		<option warning="true" is_obsolete_routine_type="true" syntax="provisional" manifest_array_type="mismatch_warning">
+		<option warning="warning" is_obsolete_iteration="true" is_obsolete_routine_type="true" syntax="provisional" manifest_array_type="mismatch_warning">
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>
 		<setting name="dead_code_removal" value="feature"/>
 		<capability>
-			<catcall_detection support="none" use="none"/>
-			<concurrency support="scoop" use="scoop"/>
-			<void_safety support="transitional" use="transitional"/>
+			<catcall_detection support="none"/>
+			<concurrency support="scoop"/>
+			<void_safety support="transitional"/>
 		</capability>
-		<library name="base" location="iron:base:base.ecf"/>
-		<library name="json" location="iron:json:library\json.ecf">
-			<option warning="false">
-			</option>
+		<library name="base" location="iron:base:base.ecf">
+			<option/>
 		</library>
-		<library name="json_ext" location="iron:json_ext:json_ext.ecf"/>
-		<library name="time" location="iron:time:time.ecf"/>
-		<library name="wsf" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\wsf.ecf"/>
-		<library name="wsf_standalone_websocket" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\standalone_websocket.ecf"/>
-		<cluster name="peer_eiffel" location=".\" recursive="true"/>
+		<library name="egbase_api" location="\home\anders\github_eiffel_liraries\EGSuite\gsuite_base\eg_base.ecf">
+			<option/>
+		</library>
+		<library name="httpd" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\httpd\httpd.ecf">
+			<option/>
+		</library>
+		<library name="json" location="iron:json:library\json.ecf">
+			<option warning="none"/>
+		</library>
+		<library name="json_ext" location="C:\home\anders\github_eiffel_liraries\json_ext_original\json_ext-save-2025-02-18\json_ext.ecf">
+			<option/>
+		</library>
+		<library name="time" location="iron:time:time.ecf">
+			<option/>
+		</library>
+		<library name="wsf" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\wsf.ecf">
+			<option/>
+		</library>
+		<library name="wsf_standalone_websocket" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\standalone_websocket.ecf">
+			<option/>
+		</library>
+		<cluster name="peer_eiffel" location=".\" recursive="true">
+			<option is_obsolete_iteration="true"/>
+		</cluster>
 	</target>
 	<target name="test" extends="peer_eiffel">
 		<root class="ANY" feature="default_create"/>
@@ -38,13 +55,16 @@
 			<exclude>/EIFGENs$</exclude>
 			<exclude>/tests$</exclude>
 		</file_rule>
-		<option profile="false">
-		</option>
+		<option profile="false" is_obsolete_iteration="true"/>
 		<setting name="console_application" value="false"/>
 		<capability>
-			<concurrency support="scoop" use="scoop"/>
+			<concurrency support="scoop"/>
 		</capability>
-		<library name="testing" location="iron:testing:testing.ecf"/>
-		<cluster name="tests" location=".\tests\"/>
+		<library name="testing" location="iron:testing:testing.ecf">
+			<option/>
+		</library>
+		<cluster name="tests" location=".\tests\">
+			<option is_obsolete_iteration="true"/>
+		</cluster>
 	</target>
 </system>
