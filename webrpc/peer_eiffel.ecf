@@ -37,7 +37,7 @@
 		<library name="json" location="iron:json:library\json.ecf">
 			<option warning="none"/>
 		</library>
-		<library name="json_ext" location="C:\home\anders\github_eiffel_liraries\json_ext_original\json_ext-save-2025-02-18\json_ext.ecf" readonly="false">
+		<library name="json_ext" location="..\..\json_ext_original\json_ext\json_ext.ecf" readonly="false">
 			<option warning="none"/>
 		</library>
 		<library name="net_ssl" location="iron:netssl:net_ssl.ecf">

@@ -18,30 +18,16 @@
 			<concurrency support="scoop"/>
 			<void_safety support="transitional"/>
 		</capability>
-		<library name="base" location="iron:base:base.ecf">
-			<option/>
-		</library>
-		<library name="egbase_api" location="\home\anders\github_eiffel_liraries\EGSuite\gsuite_base\eg_base.ecf">
-			<option/>
-		</library>
-		<library name="httpd" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\httpd\httpd.ecf">
-			<option/>
-		</library>
+		<library name="base" location="iron:base:base.ecf"/>
+		<library name="egbase_api" location="\home\anders\github_eiffel_liraries\EGSuite\gsuite_base\eg_base.ecf"/>
+		<library name="httpd" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\httpd\httpd.ecf"/>
 		<library name="json" location="iron:json:library\json.ecf">
 			<option warning="none"/>
 		</library>
-		<library name="json_ext" location="C:\home\anders\github_eiffel_liraries\json_ext_original\json_ext-save-2025-02-18\json_ext.ecf">
-			<option/>
-		</library>
-		<library name="time" location="iron:time:time.ecf">
-			<option/>
-		</library>
-		<library name="wsf" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\wsf.ecf">
-			<option/>
-		</library>
-		<library name="wsf_standalone_websocket" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\standalone_websocket.ecf">
-			<option/>
-		</library>
+		<library name="json_ext" location="..\..\..\json_ext_original\json_ext\json_ext.ecf"/>
+		<library name="time" location="iron:time:time.ecf"/>
+		<library name="wsf" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\wsf.ecf"/>
+		<library name="wsf_standalone_websocket" location="$ISE_LIBRARY\contrib\library\web\framework\ewf\wsf\connector\standalone_websocket.ecf"/>
 		<cluster name="peer_eiffel" location=".\" recursive="true">
 			<option is_obsolete_iteration="true"/>
 		</cluster>
@@ -60,9 +46,7 @@
 		<capability>
 			<concurrency support="scoop"/>
 		</capability>
-		<library name="testing" location="iron:testing:testing.ecf">
-			<option/>
-		</library>
+		<library name="testing" location="iron:testing:testing.ecf"/>
 		<cluster name="tests" location=".\tests\">
 			<option is_obsolete_iteration="true"/>
 		</cluster>
